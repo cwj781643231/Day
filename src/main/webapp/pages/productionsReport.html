@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../resources/custom/icon">
+
+<title>锦马智能信息化系统</title>
+
+<!-- Bootstrap core CSS -->
+<link href="../resources/vendor/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<link
+	href="../resources/vendor/others/css/ie10-viewport-bug-workaround.css"
+	rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../resources/custom/css/dashboard.css" rel="stylesheet">
+<link href="../resources/custom/css/status/status.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script type="text/javascript" src="../resources/vendor/others/js/html5shiv.min.js"></script>
+      <script type="text/javascript" src="../resources/vendor/others/js/respond.min.js"></script>
+    <![endif]-->
+<script>
+/* 
+function show(){
+//document.getElementById("div").style.display="";
+
+if(document.getElementById("div1").style.display="block"){
+		
+	$('#div1').css('display','none');
+	$('#div2').css('display','block');
+  }
+else if(document.getElementById("div1").style.display="none"){alert();
+	$('#div1').css('display','block');
+	$('#div2').css('display','none');
+}
+
+} */
+
+var con=false;
+function show(){
+    if(con){
+         $("#div1").show();
+         $("#div2").hide();
+         $("#labelpro").show();
+         $("#labeldaily").hide();
+         con=false;
+    }else{
+         $("#div1").hide();
+         $("#div2").show();
+         $("#labelpro").hide();
+         $("#labeldaily").show();
+         con=true;
+    }
+}
+
+</script>
+
+<style>
+    #divMain {
+        width: 500px;
+        margin: 0 auto;
+        margin-top: 100px;
+    }
+    nav {
+        position: relative;
+        width:100%;
+        height: 50px;
+    }
+    .pagination {
+        right: 0px;
+        position: absolute;
+        top: -30px;
+    }
+    nav li {
+        cursor: pointer;
+    }
+</style>
+
+</head>
+
+<body ng-app="productionRApp" >
+<!-- <script type="text/javascript">
+  //setTimeout("delay.style.visibility='visible'",2000);
+  setTimeOut(function(){
+	  alert();
+	  document.getElementById("delay").style.visibility="visible";
+  },2000);
+</script> -->
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">锦马智能信息化系统</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li class="active"><a href="productionsReport.html">数据报表</a></li>
+					<li><a href="#">帮助</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li><a href="../">总览 <span class="sr-only">(current)</span></a></li>
+					<li><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li class="active"><a href="productionsReport.html">数据报表</a></li>
+					<li><a href="employee.html">班产设置</a></li>
+
+				</ul>
+			</div>
+
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+				ng-controller="productionsRController as prCtrl" >
+
+      <div id="div1">
+      
+      </div>
+				<h2 class="sub-header">
+					生产统计
+					<!-- 配置（<a data-toggle="modal" data-target="#schedule-new"
+						ng-click="prCtrl.AddSchedule()">新增</a>） -->
+				</h2>
+				<!-- {{prCtrl.equipments}} -->
+				
+				<div>		<h4>过滤：&nbsp;&nbsp;
+							设备<span class="nullable"> <select
+								ng-model="myequipmentId"
+								ng-options="equipment.equipmentId as equipment.equipmentName for equipment in prCtrl.equipments"
+								ng-change="prCtrl.ChangeFilter(myemployeeId, myequipmentId, prCtrl.beginDate, prCtrl.endDate)">
+									<option value="">-- 选择设备 --</option>
+							</select>
+							<!-- </span>&nbsp;&nbsp;员工<span class="nullable"> <select
+								ng-model="myemployeeId"
+								ng-options="employee.employeeId as employee.name for employee in prCtrl.employees"
+								ng-change="prCtrl.ChangeFilter(myemployeeId, myequipmentId, prCtrl.beginDate, prCtrl.endDate)">
+									<option value="">-- 选择员工 --</option>
+							</select>
+							<br> -->
+							</span>&nbsp;&nbsp;起止时间： <input type="date"
+								max="{{prCtrl.today | date:'yyyy-MM-dd'}}"
+								ng-model="prCtrl.beginDate"
+								ng-change="prCtrl.ChangeFilter(myemployeeId, myequipmentId, prCtrl.beginDate, prCtrl.endDate)"
+								id="beginDate" />&nbsp;&nbsp;--&nbsp;&nbsp; <input type="date"
+								max="{{prCtrl.today | date:'yyyy-MM-dd'}}"
+								ng-model="prCtrl.endDate"
+								ng-change="prCtrl.ChangeFilter(myemployeeId, myequipmentId, prCtrl.beginDate, prCtrl.endDate)"
+								id="endDate" />
+						</h4>
+				
+						<h4>
+							操作：&nbsp;&nbsp;
+							<button class="btn btn-danger"
+								ng-click="prCtrl.CalculateProduction(prCtrl.schedules)">重新计算产量</button>
+							|
+							<button class="btn btn-warning"
+								ng-click="prCtrl.Export(prCtrl.schedules)">导出当前数据</button>
+							<!-- |
+							<button class="btn btn-success" ng-click="">导出上月数据</button> -->
+							<!-- |
+							<button class="btn btn-primary" onClick="show()">设备生产列表/员工生产列表</button> -->
+						</h4>
+				
+</div>
+     <!---------------------------------------------------------------------------------- 统计开始 ---------------------------------------------------------------------------------------------------->
+               <div id="div1" style="display: block;">
+                 <h2 class="sub-header">设备生产统计列表</h2>
+               		<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>设备</th>
+							<th>班次产量(kg)</th>
+							<!-- <th>二班次产量(kg)</th>
+							<th>三班次产量(kg)</th>
+							<th>四班次产量(kg)</th> -->
+							<th>总产量(kg)</th>
+							<!-- <th>开机率</th> -->
+							<!-- <th>操作</th> -->
+						</tr>
+					</thead>
+					<tbody>
+					  <!--   <tr ng-repeat="schedule in prCtrl.schedules>
+							<td>{{$index+1}}</td>
+							<td>{{schedule.scheduleDay}}</td>
+							<td>{{schedule.equipmentName}}</td>
+							<td>{{schedule.production/1000 | number : 2 }}</td>
+						</tr> -->
+						<tr id="delay" 
+							ng-repeat="sumschedule in prCtrl.allduction | orderBy:['scheduleDay', 'equipmentId', 'scheduleTypeId'] | limitTo: 50">
+							<td ng-bind="$index+1"></td>
+							<td ng-bind="sumschedule.equipmentName"></td>
+							<td ng-bind="sumschedule.earlyWeight"></td>
+							<!-- <td ng-bind="sumschedule.midWeight"></td>
+							<td ng-bind="sumschedule.lateWeight"></td> -->
+							<!-- <td ng-bind="sumschedule.lastWeight"></td> -->
+							<td ng-bind="(sumschedule.earlyWeight+sumschedule.midWeight+sumschedule.lateWeight) | number : 2"></td>
+						   <!--  <td><button class="btn btn-primary" data-toggle="modal" data-target="#equipment-info"
+									ng-click="prCtrl.EditEquipbyId(prCtrl.beginDate, prCtrl.endDate,allduction.equipmentId)">详情</button></td> -->
+						</tr>
+						<!-- <tr >
+						    <td
+						       ng-repeat="operationRate in prCtrl.operationRates">
+						       {{operationRate.onTime/(operationRate.onTime + operationRate.offTime)*100 | number : 2}}%</td>
+						    <td><button class="btn btn-primary" data-toggle="modal" data-target="#equipment-info"
+									ng-click="prCtrl.EditEquipbyId(prCtrl.beginDate, prCtrl.endDate,allduction.equipmentId)">详情</button></td>
+						</tr> -->
+					</tbody>
+				</table>  
+				</div> 
+				
+      <!---------------------------------------------------------------------------------- 统计结束  ------------------------------------------------------------------------------------------------- -->
+	
+	   <!---------------------------------------------------------------------------------- 员工统计开始 ---------------------------------------------------------------------------------------------------->
+                 <div id="div2" style="display: none" >
+                    <h2 class="sub-header">员工生产统计列表</h2>
+               		<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>员工姓名</th>
+							<th>总产量(kg)</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr
+							ng-repeat="sumemp in prCtrl.sumemployee | orderBy:['scheduleDay', 'employeeId', 'scheduleTypeId'] | limitTo: 50">
+							<td>{{$index+1}}</td>
+							<td>{{sumemp.employeeName}}</td>
+							<td>{{sumemp.listequipsum/1000 | number : 2 }}</td>
+							<td><button class="btn btn-primary" data-toggle="modal" data-target="#employee-info"
+									ng-click="prCtrl.GetDailyEmployeebyId(prCtrl.beginDate, prCtrl.endDate,sumemp.employeeId)">详情</button></td>
+						</tr>
+					</tbody>
+				</table> 
+				</div> 
+<!-- 				<label id="labelpro" style="display: block">总产量(kg)：{{prCtrl.allduction/1000 | number : 1 }}</label>
+ -->				<label id="labeldaily" style="display: none">总产量(kg)：{{prCtrl.alldaily/1000 | number : 1 }}</label>
+				<!-- {{prCtrl.allduction/1000 | number : 1 }} -->
+      <!---------------------------------------------------------------------------------- 员工统计结束  ------------------------------------------------------------------------------------------------- -->
+			    
+				<!-- {{prCtrl.schedules}} -->
+
+				<!-- {{prCtrl.scheduleTypes}}
+				
+				
+				{{prCtrl.employees}}
+				
+				{{prCtrl.equipments}} -->
+				 <h2 class="sub-header">生产详情统计列表</h2>
+			 	 <table class="table table-bordered">
+				   <!--  <tr>
+				        <th>序号</th>
+				        <th ng-repeat="(x,y) in prCtrl.schedules[0]">{{ x }}</th>
+				    </tr> -->
+				    <thead>
+						<tr>
+							<th>序号</th>
+							<th>日期</th>
+							<th>设备</th>
+							<th>班次</th>
+							<th>产量(g)</th>
+						</tr>
+					</thead>
+					<!-- angularjs  循环 -->
+				    <tr ng-repeat="x in prCtrl.schedules" ng-if='x != "N"'>
+				        <td ng-bind="$index + 1"></td>
+				        <td ng-bind="x.scheduleDay" id="x"></td>
+				        <td ng-bind="x.equipmentName"></td>
+				        <td ng-bind="x.scheduleTypeName"></td>
+				        <td ng-bind="x.production | number : 2 "></td>
+				    </tr>
+				    
+				    <tr ng-repeat="x in prCtrl.schedules" ng-if='x == "N"'>
+				        <td style="text-align: center;width: 100%;height: 100%;" colspan="5"><font color="red" size="100px">该时间段内没有数据</font></td>
+				    </tr>
+				</table>
+				<!-- Bootstrap -->
+				<nav>
+				    <ul class="pagination">
+				        <li>
+				            <a ng-click="prCtrl.Previous()">
+				                <span>上一页</span>
+				            </a>
+				        </li>
+				        <!-- ng-class="{active: prCtrl.isActivePage(page)}" -->
+				        <li ng-repeat="page in prCtrl.pageList.pageBar"  >
+				            <a ng-click="prCtrl.clickNum(page, myequipmentId, prCtrl.beginDate, prCtrl.endDate)" >{{ page }}</a>
+				        </li>
+				        <li>
+				            <a ng-click="prCtrl.Next()">
+				                <span>下一页</span>
+				            </a>
+				        </li>
+				    </ul>
+				</nav>
+			 	<!--  <table class="table table-striped">
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>日期</th>
+							<th>设备</th>
+							<th>班次</th>
+							<th>员工排班</th>
+							<th>产量(g)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr
+							ng-repeat="schedule in prCtrl.schedules | orderBy:['scheduleDay', 'equipmentId', 'scheduleTypeId']  | limitTo: 50">
+							<td>{{$index+1}}</td>
+							<td>{{schedule.scheduleDay}}</td>
+							<td>{{schedule.equipmentName}}</td>
+							<td>{{schedule.scheduleTypeName}}:{{schedule.beginTime}}-{{schedule.endTime}}</td>
+							<td>{{schedule.employeeName}}</td>
+							<td>{{schedule.production | number : 2 }}</td>
+
+						</tr>
+					</tbody>
+				</table> 
+				<nav aria-label="Page navigation">
+				  <ul class="pagination">
+				    <li>
+				      <a href="#" aria-label="Previous">
+				        <span aria-hidden="true">&laquo;</span>
+				      </a>
+				    </li>
+				    <li><a href="#">1</a></li>
+				    <li><a href="#">2</a></li>
+				    <li><a href="#">3</a></li>
+				    <li><a href="#">4</a></li>
+				    <li><a href="#">5</a></li>
+				    <li>
+				      <a href="#" aria-label="Next">
+				        <span aria-hidden="true">&raquo;</span>
+				      </a>
+				    </li>
+				  </ul>
+			   </nav> -->
+   <!-- 设备总计详情开始 ----------------------------------------------------------------------------------------------- -->
+    <div class="modal" id="equipment-info">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">设备详细信息</h4>
+							</div>
+							<div class="modal-body">
+								<table class="table">
+									<thead>
+										<tr>
+											<th width="20%">
+												序号
+											</th>
+											<th width="30%">
+												设备名称
+											</th>
+											<th width="30%">
+												时间
+											</th>
+											<th width="20%">
+												总产量(天/kg)
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="sumeq in prCtrl.sumequipid">
+										    <td>
+										    {{$index+1}}
+										    </td>
+											<td>
+										    {{sumeq.equipmentName}}
+											</td>
+											<td>
+										    {{sumeq.detailsTime}}	
+											</td>
+											<td>
+											{{sumeq.listsumbyid/1000}}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+							</div>
+						</div>
+						<!-- /edit.modal-content -->
+					</div>
+					<!-- /edit.modal-dialog -->
+				</div>
+    <!-- 设备总计详情结束----------------------------------------------------------------------------------------------- -->
+			
+      <!-- 员工总计详情开始 ----------------------------------------------------------------------------------------------- -->
+    <div class="modal" id="employee-info">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">设备详细信息</h4>
+							</div>
+							<div class="modal-body">
+								<table class="table">
+									<thead>
+										<tr>
+											<th width="20%">
+												序号
+											</th>
+											<th width="30%">
+												员工名称
+											</th>
+											<th width="30%">
+												时间
+											</th>
+											<th width="20%">
+												总产量(天/kg)
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="sumemployeebyids in prCtrl.sumemployeebyid">
+										    <td>
+										    {{$index+1}}
+										    </td>
+											<td>
+										    {{sumemployeebyids.employeeName}}
+											</td>
+											<td>
+										    {{sumemployeebyids.scheduleDay}}	
+											</td>
+											<td>
+											{{sumemployeebyids.listsumbyid/1000 | number : 2 }}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+							</div>
+						</div>
+						<!-- /edit.modal-content -->
+					</div>
+					<!-- /edit.modal-dialog -->
+				</div>
+    <!-- 员工总计详情结束----------------------------------------------------------------------------------------------- -->
+			</div>
+			 
+		</div>
+		
+		
+	</div>
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript"
+		src="../resources/vendor/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/echarts/3.2.3/echarts.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript"
+		src="../resources/vendor/others/js/ie10-viewport-bug-workaround.js"></script>
+
+	<script type="text/javascript"
+		src="../resources/vendor/angular/1.5.7/angular.min.js"></script>
+    <script type="text/javascript">
+
+/* app.controller('prCtrl',function ($scope){
+   // $scope._val = "leifengshushu";
+   alert($scope.schedules);
+   
+});	 */
+   // angular.module('productionRApp',[]).controller('prCtrl',function ($scope){
+    /* $scope.fun = function(x){
+    	  console.log("sssss"+x);
+       // var flag = false;
+        if(x != null){
+           // flag = true;
+           alert("成功");
+        }else{
+        alert("失败");
+        } */
+        function fun(x){
+        	alert("~~~~");
+        	alert(x);
+        }
+       // return flag;
+    
+//});
+</script>
+    <script type="text/javascript"
+		src="../resources/custom/js/equipment/appEquipment.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/equipment/serviceEquipment.js"></script>
+   
+    <script type="text/javascript"
+		src="../resources/custom/js/productionReport/appProductionReport.js"></script>    
+	<script type="text/javascript"
+		src="../resources/custom/js/productionReport/serviceProductionReport.js"></script>
+	
+	
+	<script type="text/javascript"
+		src="../resources/custom/js/scheduleType/appScheduleType.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/scheduleType/serviceScheduleType.js"></script>
+
+	<script type="text/javascript"
+		src="../resources/custom/js/schedule/appSchedule.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/schedule/controllerSchedule.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/schedule/serviceScheduleTest.js"></script>
+    
+
+	<script type="text/javascript"
+		src="../resources/custom/js/productionReport/appProductionReport.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/productionReport/controllerProductionReport.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/productionReport/serviceProductionReport.js"></script>
+
+    <script type="text/javascript"
+		src="../resources/custom/js/employee/appEmployee.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/employee/serviceEmployee.js"></script>
+		
+	<script type="text/javascript"
+		src="../resources/custom/js/operationrate/appOperationRate.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/operationrate/serviceOperationRate.js"></script>
+    <script type="text/javascript">
+var myDate = new Date(); 
+var year=myDate.getYear();
+var month=myDate.getMonth()+1;
+var day=myDate.getDate();
+var hours=myDate.getHours();
+var minutes=myDate.getMinutes();
+var seconds=myDate.getSeconds();
+var milliseconds = myDate.getMilliseconds();  
+//alert(year+"/"+month+"/"+day+"   "+hours+":"+minutes+":"+seconds+":"+milliseconds);
+//document.getElementById("div1").innerHTML = year+"/"+month+"/"+day+"   "+hours+":"+minutes+":"+seconds+":"+milliseconds;
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../resources/custom/icon">
+
+<title>锦马智能信息化系统</title>
+
+<!-- Bootstrap core CSS -->
+<link href="../resources/vendor/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<link
+	href="../resources/vendor/others/css/ie10-viewport-bug-workaround.css"
+	rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../resources/custom/css/dashboard.css" rel="stylesheet">
+<link href="../resources/custom/css/status/status.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script type="text/javascript" src="../resources/vendor/others/js/html5shiv.min.js"></script>
+      <script type="text/javascript" src="../resources/vendor/others/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body ng-app="scheduleTypeApp">
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">锦马智能信息化系统</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li><a href="productionReport.html">数据报表</a></li>
+					<li><a href="#">帮助</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li><a href="../">总览 <span class="sr-only">(current)</span></a></li>
+					<li><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li><a href="productionReport.html">数据报表</a></li>
+					<li><a href="employee.html">员工信息</a></li>
+					<li class="active"><a href="scheduleType.html">排班配置</a></li>
+					<li><a href="schedule.html">排班计划</a></li>
+				</ul>
+			</div>
+
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+				ng-controller="scheduleTypeController as scheduleTypeCtrl">
+
+
+				<h2 class="sub-header">
+					排班配置（<a data-toggle="modal" data-target="#scheduleType-new"
+						ng-click="scheduleTypeCtrl.AddScheduleType()">新增</a>）
+				</h2>
+
+
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>排班编号</th>
+							<th>排班名称</th>
+							<th>开始时间</th>
+							<th>结束时间</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="scheduleType in scheduleTypeCtrl.scheduleTypes">
+							<td>{{scheduleType.scheduleTypeId}}</td>
+							<td>{{scheduleType.scheduleTypeCode}}</td>
+							<td>{{scheduleType.scheduleTypeName}}</td>
+							<td>{{scheduleType.beginTime}}</td>
+							<td>{{scheduleType.endTime}}</td>
+							<td>
+								<button data-toggle="modal" data-target="#scheduleType-info"
+									ng-click="scheduleTypeCtrl.EditScheduleType(scheduleType)">编辑</button>
+								<button 
+									ng-click="scheduleTypeCtrl.Export()">下载excel</button>
+								|
+
+								<button
+									ng-click="scheduleTypeCtrl.DeleteScheduleType(scheduleType)">删除</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="modal" id="scheduleType-new">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">添加新的排班配置</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-4" align="right">排班编号:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="排班编号"
+											ng-model="scheduleTypeCtrl.newScheduleType.scheduleTypeCode" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">排班名称:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="排班名称"
+											ng-model="scheduleTypeCtrl.newScheduleType.scheduleTypeName" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">开始时间:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="hh:mm:ss"
+											ng-model="scheduleTypeCtrl.newScheduleType.beginTime" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">结束时间:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="hh:mm:ss"
+											ng-model="scheduleTypeCtrl.newScheduleType.endTime" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">描述:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="描述"
+											ng-model="scheduleTypeCtrl.newScheduleType.description" />
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+								<button type="button" class="btn btn-primary"
+									ng-click="scheduleTypeCtrl.CreateScheduleType(scheduleTypeCtrl.newScheduleType)">新增</button>
+							</div>
+
+						</div>
+						<!-- /new.modal-content -->
+					</div>
+					<!-- /new.modal-dialog -->
+				</div>
+				<!-- /new.modal -->
+
+				<div class="modal" id="scheduleType-info">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">编辑排班配置</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-4" align="right">排班编号:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="排班编号"
+											ng-model="scheduleTypeCtrl.selectedScheduleType.scheduleTypeCode" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">排班名称:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="排班名称"
+											ng-model="scheduleTypeCtrl.selectedScheduleType.scheduleTypeName" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">开始时间:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="hh:mm:ss"
+											ng-model="scheduleTypeCtrl.selectedScheduleType.beginTime" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">结束时间:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="hh:mm:ss"
+											ng-model="scheduleTypeCtrl.selectedScheduleType.endTime" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">描述:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="描述"
+											ng-model="scheduleTypeCtrl.selectedScheduleType.description" />
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+								<button type="button" class="btn btn-primary"
+									ng-click="scheduleTypeCtrl.UpdateScheduleType(scheduleTypeCtrl.selectedScheduleType)">保存</button>
+							</div>
+						</div>
+						<!-- /edit.modal-content -->
+					</div>
+					<!-- /edit.modal-dialog -->
+				</div>
+				<!-- /edit.modal -->
+
+
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript"
+		src="../resources/vendor/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/echarts/3.2.3/echarts.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript"
+		src="../resources/vendor/others/js/ie10-viewport-bug-workaround.js"></script>
+
+	<script type="text/javascript"
+		src="../resources/vendor/angular/1.5.7/angular.min.js"></script>
+
+	<script type="text/javascript"
+		src="../resources/custom/js/scheduleType/appScheduleType.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/scheduleType/controllerScheduleType.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/scheduleType/serviceScheduleType.js"></script>
+</body>
+</html>

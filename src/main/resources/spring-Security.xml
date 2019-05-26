@@ -1,0 +1,60 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+
+      <!-- 自己写登录页面，并且登陆页面不拦截 -->  
+  <!--   <http pattern="/login/aaa.jsp" security="none" />   -->
+
+
+    <!-- enable use-expressions  配置拦截页面-->
+	<http auto-config="true" use-expressions="true">
+
+       <!--  <intercept-url pattern="/**" access="hasRole('ROLE_USER')" />   -->
+        <!-- 当拥有该账号权限时   可以访问    /pages下的页面 -->
+		<intercept-url pattern="/pages/**" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')" />
+		<intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
+		<!-- <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')" /> -->
+		
+		
+	    <csrf disabled="false"/> 
+		
+		<!--key设置cookie的秘钥的值，默认是SpringSecured。后一个属性指定有效期  -->
+		<remember-me key="spitterKey" token-validity-seconds="2419200"/> 
+		<!-- access denied page  无法登录时跳转的页面-->
+	<!-- 	<access-denied-handler error-page="/login/home.html" /> -->
+
+      
+        <!-- 设置用户默认登录页面 -->   <!-- 认证登陆失败     authentication-failure-url -->
+         <!-- 默认成功  default-target-url -->
+ 		 <form-login
+		    login-page="/login/loginIndex.jsp"
+		    default-target-url="/#"
+		    always-use-default-target="true"
+			authentication-failure-url="/login/loginIndex.jsp"
+			username-parameter="username"
+			password-parameter="password" />
+			<!-- 用户退出的url -->
+		<!-- <logout logout-success-url="/login?logout"  /> -->
+		<!-- enable csrf protection -->
+		<!--  <csrf />  -->
+		<remember-me /><!-- 下次自动登录 -->
+	</http>
+
+	<!-- Select users and user_roles from database  "select username, role from user_roles where username =?  "-->
+	<authentication-manager erase-credentials="false"><!-- erase-credentials  配合 remember-me -->
+	  <authentication-provider>
+		<jdbc-user-service data-source-ref="dataSource"
+		  users-by-username-query=
+		    "select username,password,1 as enabled from Sys_user where username=?"
+		  authorities-by-username-query=
+		   "select u.username, r.name as role from sys_user u,sys_role_user ur, sys_role r 
+            where u.id=ur.Sys_User_id and r.id = ur.Sys_Role_id and u.username= ? "
+		     />
+	  </authentication-provider>
+	</authentication-manager>
+   
+</beans:beans>

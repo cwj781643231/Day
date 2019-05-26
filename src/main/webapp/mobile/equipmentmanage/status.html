@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../resources/custom/icon">
+
+<title>锦马智能信息化系统</title>
+
+<!-- Bootstrap core CSS -->
+<link href="../resources/vendor/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<link
+	href="../resources/vendor/others/css/ie10-viewport-bug-workaround.css"
+	rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../resources/custom/css/dashboard.css" rel="stylesheet">
+<link href="../resources/custom/css/status/status.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script type="text/javascript" src="../resources/vendor/others/js/html5shiv.min.js"></script>
+      <script type="text/javascript" src="../resources/vendor/others/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body ng-app="statusApp">
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">锦马智能信息化系统</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="active"><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li><a href="productionReport.html">数据报表</a></li>
+					<li><a href="#">帮助</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li><a href="../">总览 <span class="sr-only">(current)</span></a></li>
+					<li class="active"><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li><a href="productionReport.html">数据报表</a></li>
+					<li><a href="employee.html">员工信息</a></li>
+					<li><a href="scheduleType.html">排班配置</a></li>
+					<li><a href="schedule.html">排班计划</a></li>
+				</ul>
+			</div>
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+				ng-controller="equipmentControl as equipmentCtrl">
+				<h1 class="page-header">设备状态总览</h1>
+
+				<div class="row" style="width: 800px; height: 400px;">
+					
+						<div id="main" style="width: 100%; height: 100%;"></div>
+				
+				</div>
+				<h2 class="sub-header">设备状态详情</h2>
+
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-sm-2"
+							ng-repeat="equipment in equipmentCtrl.equipments">
+							<div>
+								<h2>
+									<span class="label status-{{equipment.equipmentStatus}}">{{equipment.equipmentName}}</span>
+								</h2>
+							</div>
+							
+							<div class="progress">
+								<div class="progress-bar progress-bar-success"
+									role="progressbar" aria-valuenow="{{equipment.taskCompletion/10}}" aria-valuemin="0"
+									aria-valuemax="100" style="width: {{equipment.taskCompletion/10}}%;">
+									<span><font color="black">{{equipment.taskCompletion/10}}%</font></span>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+
+
+				<h2 class="sub-header">设备列表</h2>
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>设备名称</th>
+								<th>设备地址</th>
+								<th>车间</th>
+								<th>任务进度</th>
+								<th>设备状态</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="equipment in equipmentCtrl.equipments">
+								<td>{{equipment.equipmentId}}</td>
+								<td><a href="#" data-toggle="modal"
+									data-target="#equipment-info"
+									ng-click="equipmentCtrl.ViewEquipment(equipment.equipmentId)">{{equipment.equipmentName}}</a></td>
+								<td>{{equipment.ipAddress}} : {{equipment.unitIdentifier}}</td>
+								<td>{{equipment.workshop}}</td>
+								<td>{{equipment.taskCompletion/10+"%"}}</td>
+								<td><font class="font-{{equipment.equipmentStatus}}">{{equipment.status}}</font></td>
+							</tr>
+						</tbody>
+					</table>
+
+
+				</div>
+
+				<div class="modal" id="equipment-info">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">设备详细信息</h4>
+							</div>
+							<div class="modal-body">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th width="40%">设备编号</th>
+											<th width="30%">设备名称</th>
+											<th width="30%">设备状态</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>{{equipmentCtrl.equipment.equipmentId}}</td>
+											<td>{{equipmentCtrl.equipment.equipmentName}}</td>
+											<td>{{equipmentCtrl.equipment.status}}</td>
+											</tr>
+									</tbody>
+								</table>
+
+	
+								<table class="table">
+									<thead>
+										<tr>
+											<th width="40%">
+												项目
+											</th>
+											<th width="30%">
+												设定值
+											</th>
+											<th width="30%">
+												实际值
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>
+												锭速       (rpm)
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentConfigure.spindleSpeed}}
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentStatus.measuredTwistingMotorSpindleSpeed}}
+											</td>
+										</tr>
+										<tr class="success">
+											<td>
+											卷绕速度       (m/min)      
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentConfigure.spindleSpeed*2/equipmentCtrl.equipment.equipmentConfigure.twist | number : 2 }}
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentStatus.measuredCoilingRollerSpeed/100 | number : 2 }}
+											</td>
+										</tr>
+										<tr class="error">
+											<td>
+												捻度       (T/m)
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentConfigure.twist}}
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentStatus.measuredTwist}}
+											</td>
+										</tr>
+										<tr class="warning">
+											<td>
+											横动行程       (mm)
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentConfigure.initialTraverseTravel/10 | number : 1 }}
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentStatus.currentTraversingWidth/10 | number : 1 }}
+											</td>
+										</tr>
+										<tr class="error">
+											<td>
+												纱线定长       (m)
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentConfigure.yarnLengthLow+ 65536*equipmentCtrl.equipment.equipmentConfigure.yarnLengthHigh}}
+											</td>
+											<td>
+												{{(equipmentCtrl.equipment.equipmentStatus.yarnLengthLowHalfWord+ 65536*equipmentCtrl.equipment.equipmentStatus.yarnLengthHighHalfWord)/10}}
+											</td>
+										</tr>
+										<tr class="info">
+											<td>
+												加捻方向   Z/S    
+											</td>
+											<td>
+												<span ng-if="equipmentCtrl.equipment.equipmentConfigure.twistingDirection==1">S</span>
+												<span ng-if="equipmentCtrl.equipment.equipmentConfigure.twistingDirection==0">Z</span>
+											</td>
+											<td>
+												<span ng-if="equipmentCtrl.equipment.equipmentConfigure.twistingDirection==1">S</span>
+												<span ng-if="equipmentCtrl.equipment.equipmentConfigure.twistingDirection==0">Z</span>
+											</td>
+										</tr>
+										<tr class="error">
+											<td>
+												卷绕角       (θ)
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentConfigure.windingAngle/10 | number : 1 }}
+											</td>
+											<td>
+												{{equipmentCtrl.equipment.equipmentConfigure.windingAngle/10 | number : 1 }}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+							</div>
+						</div>
+						<!-- /edit.modal-content -->
+					</div>
+					<!-- /edit.modal-dialog -->
+				</div>
+				<!-- /edit.modal -->
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript"
+		src="../resources/vendor/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/echarts/3.2.3/echarts.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript"
+		src="../resources/vendor/others/js/ie10-viewport-bug-workaround.js"></script>
+
+	<script type="text/javascript"
+		src="../resources/vendor/angular/1.5.7/angular.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/status/status.js"></script>
+</body>
+</html>

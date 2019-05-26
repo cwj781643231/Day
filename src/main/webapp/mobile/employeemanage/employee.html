@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../resources/custom/icon">
+
+<title>锦马智能信息化系统</title>
+
+<!-- Bootstrap core CSS -->
+<link href="../resources/vendor/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<link
+	href="../resources/vendor/others/css/ie10-viewport-bug-workaround.css"
+	rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../resources/custom/css/dashboard.css" rel="stylesheet">
+<link href="../resources/custom/css/status/status.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script type="text/javascript" src="../resources/vendor/others/js/html5shiv.min.js"></script>
+      <script type="text/javascript" src="../resources/vendor/others/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body ng-app="employeeApp">
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">锦马智能信息化系统</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li><a href="productionReport.html">数据报表</a></li>
+					<li><a href="#">帮助</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li><a href="../">总览 <span class="sr-only">(current)</span></a></li>
+					<li><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li><a href="productionReport.html">数据报表</a></li>
+					<li class="active"><a href="employee.html">员工信息</a></li>
+					<li><a href="scheduleType.html">排班配置</a></li>
+					<li><a href="schedule.html">排班计划</a></li>
+				</ul>
+			</div>
+
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+				ng-controller="employeeController as employeeCtrl">
+
+
+				<h2 class="sub-header">
+					员工信息（<a data-toggle="modal" data-target="#employee-new"
+						ng-click="employeeCtrl.AddEmployee()">新增</a>）
+				</h2>
+
+
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>编号</th>
+							<th>姓名</th>
+							<th>岗位</th>
+							<th>车间</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="employee in employeeCtrl.employees">
+							<td>{{employee.employeeId}}</td>
+							<td>{{employee.employeeCode}}</td>
+							<td>{{employee.name}}</td>
+							<td>{{employee.position}}</td>
+							<td>{{employee.workshop}}</td>
+							<td>
+								<button data-toggle="modal" data-target="#employee-info"
+									ng-click="employeeCtrl.EditEmployee(employee)">编辑</button> |
+
+								<button ng-click="employeeCtrl.DeleteEmployee(employee)">删除</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="modal" id="employee-new">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">添加新的员工</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-4" align="right">员工工号:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="员工工号"
+											ng-model="employeeCtrl.newEmployee.employeeCode" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">员工姓名:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="员工姓名"
+											ng-model="employeeCtrl.newEmployee.name" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">性别:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="性别"
+											ng-model="employeeCtrl.newEmployee.gender" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">生日:</div>
+									<div class="col-sm-8" align="left">
+										<input type="date" placeholder="生日"
+											ng-model="employeeCtrl.newEmployee.birthday" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">手机号码:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="手机号码或电话"
+											ng-model="employeeCtrl.newEmployee.phone" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">电子邮件:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="电子邮件"
+											ng-model="employeeCtrl.newEmployee.email" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">家庭住址:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="家庭住址"
+											ng-model="employeeCtrl.newEmployee.address" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">身份证号:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="身份证"
+											ng-model="employeeCtrl.newEmployee.idcard" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">岗位:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="岗位"
+											ng-model="employeeCtrl.newEmployee.position" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">车间:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="车间"
+											ng-model="employeeCtrl.newEmployee.workshop" />
+									</div>
+								</div>
+								<!-- <div>{{employeeCtrl.selectedEmployee}}
+								</div> -->
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+								<button type="button" class="btn btn-primary"
+									ng-click="employeeCtrl.CreateEmployee(employeeCtrl.newEmployee)">新增</button>
+							</div>
+
+						</div>
+						<!-- /new.modal-content -->
+					</div>
+					<!-- /new.modal-dialog -->
+				</div>
+				<!-- /new.modal -->
+
+				<div class="modal" id="employee-info">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">编辑员工信息</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-4" align="right">员工工号:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="员工工号"
+											ng-model="employeeCtrl.selectedEmployee.employeeCode" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">员工姓名:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="员工姓名"
+											ng-model="employeeCtrl.selectedEmployee.name" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">性别:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="性别"
+											ng-model="employeeCtrl.selectedEmployee.gender" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">生日:</div>
+									<div class="col-sm-8" align="left">
+										<input type="date" placeholder="生日"
+											ng-model="employeeCtrl.selectedEmployee.birthday" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">手机号码:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="手机号码或电话"
+											ng-model="employeeCtrl.selectedEmployee.phone" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">电子邮件:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="电子邮件"
+											ng-model="employeeCtrl.selectedEmployee.email" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">家庭住址:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="家庭住址"
+											ng-model="employeeCtrl.selectedEmployee.address" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">身份证号:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="身份证"
+											ng-model="employeeCtrl.selectedEmployee.idcard" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">岗位:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="岗位"
+											ng-model="employeeCtrl.selectedEmployee.position" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4" align="right">车间:</div>
+									<div class="col-sm-8" align="left">
+										<input type="text" placeholder="车间"
+											ng-model="employeeCtrl.selectedEmployee.workshop" />
+									</div>
+								</div>
+								<!-- <div>{{employeeCtrl.selectedEmployee}}
+								</div> -->
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+								<button type="button" class="btn btn-primary"
+									ng-click="employeeCtrl.UpdateEmployee(employeeCtrl.selectedEmployee)">保存</button>
+							</div>
+						</div>
+						<!-- /edit.modal-content -->
+					</div>
+					<!-- /edit.modal-dialog -->
+				</div>
+				<!-- /edit.modal -->
+
+
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript"
+		src="../resources/vendor/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/echarts/3.2.3/echarts.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript"
+		src="../resources/vendor/others/js/ie10-viewport-bug-workaround.js"></script>
+
+	<script type="text/javascript"
+		src="../resources/vendor/angular/1.5.7/angular.min.js"></script>
+
+	<script type="text/javascript"
+		src="../resources/custom/js/employee/appEmployee.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/employee/controllerEmployee.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/employee/serviceEmployee.js"></script>
+</body>
+</html>

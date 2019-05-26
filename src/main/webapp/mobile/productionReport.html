@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../resources/custom/icon">
+
+<title>锦马智能信息化系统</title>
+
+<!-- Bootstrap core CSS -->
+<link href="../resources/vendor/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<link
+	href="../resources/vendor/others/css/ie10-viewport-bug-workaround.css"
+	rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../resources/custom/css/dashboard.css" rel="stylesheet">
+<link href="../resources/custom/css/status/status.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script type="text/javascript" src="../resources/vendor/others/js/html5shiv.min.js"></script>
+      <script type="text/javascript" src="../resources/vendor/others/js/respond.min.js"></script>
+    <![endif]-->
+<script>
+/* 
+function show(){
+//document.getElementById("div").style.display="";
+
+if(document.getElementById("div1").style.display="block"){
+		
+	$('#div1').css('display','none');
+	$('#div2').css('display','block');
+  }
+else if(document.getElementById("div1").style.display="none"){alert();
+	$('#div1').css('display','block');
+	$('#div2').css('display','none');
+}
+
+} */
+
+var con=false;
+function show(){
+    if(con){
+         $("#div1").show();
+         $("#div2").hide();
+         con=false;
+    }else{
+         $("#div1").hide();
+         $("#div2").show();
+         con=true;
+    }
+}
+
+</script>
+</head>
+
+<body ng-app="productionRApp">
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">锦马智能信息化系统</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li class="active"><a href="productionReport.html">数据报表</a></li>
+					<li><a href="#">帮助</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar">
+					<li><a href="../">总览 <span class="sr-only">(current)</span></a></li>
+					<li><a href="status.html">设备状态</a></li>
+					<li><a href="equipment.html">设备管理</a></li>
+					<li><a href="operationrate.html">生产情况</a></li>
+					<li><a href="events.html">事件信息</a></li>
+					<li class="active"><a href="productionReport.html">数据报表</a></li>
+					<li><a href="employee.html">员工信息</a></li>
+					<li><a href="scheduleType.html">排班配置</a></li>
+					<li><a href="schedule.html">排班计划</a></li>
+
+				</ul>
+			</div>
+
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+				ng-controller="productionRController as prCtrl">
+
+
+				<h2 class="sub-header">
+					生产统计
+					<!-- 配置（<a data-toggle="modal" data-target="#schedule-new"
+						ng-click="prCtrl.AddSchedule()">新增</a>） -->
+				</h2>
+				<!-- {{prCtrl.equipments}} -->
+				
+				<div>		<h4>过滤：&nbsp;&nbsp;
+							设备<span class="nullable"> <select
+								ng-model="myequipmentId"
+								ng-options="equipment.equipmentId as equipment.equipmentName for equipment in prCtrl.equipments"
+								ng-change="prCtrl.ChangeFilter(myemployeeId, myequipmentId, prCtrl.beginDate, prCtrl.endDate)">
+									<option value="">-- 选择设备 --</option>
+							</select>
+							</span>&nbsp;&nbsp;员工<span class="nullable"> <select
+								ng-model="myemployeeId"
+								ng-options="employee.employeeId as employee.name for employee in prCtrl.employees"
+								ng-change="prCtrl.ChangeFilter(myemployeeId, myequipmentId, prCtrl.beginDate, prCtrl.endDate)">
+									<option value="">-- 选择员工 --</option>
+							</select>
+							</span>&nbsp;&nbsp;起止时间： <input type="date"
+								max="{{prCtrl.today | date:'yyyy-MM-dd'}}"
+								ng-model="prCtrl.beginDate"
+								ng-change="prCtrl.ChangeFilter(myemployeeId, myequipmentId, prCtrl.beginDate, prCtrl.endDate)"
+								id="beginDate" />&nbsp;&nbsp;--&nbsp;&nbsp; <input type="date"
+								max="{{prCtrl.today | date:'yyyy-MM-dd'}}"
+								ng-model="prCtrl.endDate"
+								ng-change="prCtrl.ChangeFilter(myemployeeId, myequipmentId, prCtrl.beginDate, prCtrl.endDate)"
+								id="endDate" />
+						</h4>
+				
+						<h4>
+							操作：&nbsp;&nbsp;
+							<button class="btn btn-danger"
+								ng-click="prCtrl.CalculateProduction(prCtrl.schedules)">重新计算产量</button>
+							|
+							<button class="btn btn-warning"
+								ng-click="prCtrl.Export(prCtrl.schedules)">导出当前数据</button>
+							|
+							<button class="btn btn-success" ng-click="">导出上月数据</button>
+							|
+							<button class="btn btn-primary" onClick="show()">设备生产列表/员工生产列表</button>
+						</h4>
+				
+</div>
+     <!---------------------------------------------------------------------------------- 统计开始 ---------------------------------------------------------------------------------------------------->
+               <div id="div1" style="display: block;">
+                 <h2 class="sub-header">设备生产统计列表</h2>
+               		<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>设备</th>
+							<th>总产量(g)</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!-- <tr ng-repeat="schedule in prCtrl.schedules>
+							<td>{{$index+1}}</td>
+							<td>{{schedule.scheduleDay}}</td>
+							<td>{{schedule.equipmentName}}</td>
+							<td>{{schedule.production/1000 | number : 2 }}</td>
+						</tr> -->
+						<tr
+							ng-repeat="sumschedule in prCtrl.sumschedules | orderBy:['scheduleDay', 'equipmentId', 'scheduleTypeId'] | limitTo: 50">
+							<td>{{$index+1}}</td>
+							<td>{{sumschedule.equipmentName}}</td>
+							<td>{{sumschedule.listequipsum | number : 2 }}</td>
+							<td><button class="btn btn-primary" data-toggle="modal" data-target="#equipment-info"
+									ng-click="prCtrl.EditEquipbyId(prCtrl.beginDate, prCtrl.endDate,sumschedule.equipmentId)">详情</button></td>
+						</tr>
+					</tbody>
+				</table>  
+				</div>
+				
+      <!---------------------------------------------------------------------------------- 统计结束  ------------------------------------------------------------------------------------------------- -->
+	
+	   <!---------------------------------------------------------------------------------- 员工统计开始 ---------------------------------------------------------------------------------------------------->
+                 <div id="div2" style="display: none" >
+                    <h2 class="sub-header">员工生产统计列表</h2>
+               		<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>员工姓名</th>
+							<th>总产量(g)</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr
+							ng-repeat="sumemp in prCtrl.sumemployee | orderBy:['scheduleDay', 'employeeId', 'scheduleTypeId'] | limitTo: 50">
+							<td>{{$index+1}}</td>
+							<td>{{sumemp.employeeName}}</td>
+							<td>{{sumemp.listequipsum | number : 2 }}</td>
+							<td><button class="btn btn-primary" data-toggle="modal" data-target="#employee-info"
+									ng-click="prCtrl.GetDailyEmployeebyId(prCtrl.beginDate, prCtrl.endDate,sumemp.employeeId)">详情</button></td>
+						</tr>
+					</tbody>
+				</table> 
+				</div> 
+				<label>总产量(kg)：{{prCtrl.allduction/1000 | number : 1 }}</label>
+      <!---------------------------------------------------------------------------------- 员工统计结束  ------------------------------------------------------------------------------------------------- -->
+			    
+				<!-- {{prCtrl.schedules}} -->
+
+				<!-- {{prCtrl.scheduleTypes}}
+				
+				
+				{{prCtrl.employees}}
+				
+				{{prCtrl.equipments}} -->
+				 <h2 class="sub-header">生产详情统计列表</h2>
+			 	 <table class="table table-striped">
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>日期</th>
+							<th>班次</th>
+							<th>设备</th>
+							<th>员工排班</th>
+							<th>产量(g)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr
+							ng-repeat="schedule in prCtrl.schedules | orderBy:['scheduleDay', 'equipmentId', 'scheduleTypeId']  | limitTo: 50">
+							<td>{{$index+1}}</td>
+							<td>{{schedule.scheduleDay}}</td>
+							<td>{{schedule.scheduleTypeName}}:{{schedule.beginTime}}-{{schedule.endTime}}</td>
+							<td>{{schedule.equipmentName}}</td>
+							<td>{{schedule.employeeName}}</td>
+							<td>{{schedule.production | number : 2 }}</td>
+
+						</tr>
+					</tbody>
+				</table> 
+ 
+   <!-- 设备总计详情开始 ----------------------------------------------------------------------------------------------- -->
+    <div class="modal" id="equipment-info">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">设备详细信息</h4>
+							</div>
+							<div class="modal-body">
+								<table class="table">
+									<thead>
+										<tr>
+											<th width="20%">
+												序号
+											</th>
+											<th width="30%">
+												设备名称
+											</th>
+											<th width="30%">
+												时间
+											</th>
+											<th width="20%">
+												总产量(天/)
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="sumeq in prCtrl.sumequipid">
+										    <td>
+										    {{$index+1}}
+										    </td>
+											<td>
+										    {{sumeq.equipmentName}}
+											</td>
+											<td>
+										    {{sumeq.scheduleDay}}	
+											</td>
+											<td>
+											{{sumeq.listsumbyid}}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+							</div>
+						</div>
+						<!-- /edit.modal-content -->
+					</div>
+					<!-- /edit.modal-dialog -->
+				</div>
+    <!-- 设备总计详情结束----------------------------------------------------------------------------------------------- -->
+			
+      <!-- 员工总计详情开始 ----------------------------------------------------------------------------------------------- -->
+    <div class="modal" id="employee-info">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+								<h4 class="modal-title">设备详细信息</h4>
+							</div>
+							<div class="modal-body">
+								<table class="table">
+									<thead>
+										<tr>
+											<th width="20%">
+												序号
+											</th>
+											<th width="30%">
+												员工名称
+											</th>
+											<th width="30%">
+												时间
+											</th>
+											<th width="20%">
+												总产量(天/)
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="sumemployeebyids in prCtrl.sumemployeebyid">
+										    <td>
+										    {{$index+1}}
+										    </td>
+											<td>
+										    {{sumemployeebyids.employeeName}}
+											</td>
+											<td>
+										    {{sumemployeebyids.scheduleDay}}	
+											</td>
+											<td>
+											{{sumemployeebyids.listsumbyid}}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+							</div>
+						</div>
+						<!-- /edit.modal-content -->
+					</div>
+					<!-- /edit.modal-dialog -->
+				</div>
+    <!-- 员工总计详情结束----------------------------------------------------------------------------------------------- -->
+			</div>
+			 
+		</div>
+		
+		
+	</div>
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript"
+		src="../resources/vendor/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script type="text/javascript"
+		src="../resources/vendor/echarts/3.2.3/echarts.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript"
+		src="../resources/vendor/others/js/ie10-viewport-bug-workaround.js"></script>
+
+	<script type="text/javascript"
+		src="../resources/vendor/angular/1.5.7/angular.min.js"></script>
+
+    <script type="text/javascript"
+		src="../resources/custom/js/employee/appEmployee.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/employee/serviceEmployee.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/equipment/appEquipment.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/equipment/serviceEquipment.js"></script>
+    
+
+	<script type="text/javascript"
+		src="../resources/custom/js/productionReport/appProductionReport.js"></script>
+	<script type="text/javascript"
+		src="../resources/custom/js/productionReport/controllerProductionReport.js"></script>
+    <script type="text/javascript"
+		src="../resources/custom/js/productionReport/serviceProductionReport.js"></script>
+
+
+</body>
+</html>
